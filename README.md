@@ -1065,6 +1065,27 @@ jobs:
 
 # Configuring CD to automate the deployment
 
+After the pull/merge request is merged, continuous delivery (CD) comes into play. CD automates the release process by automatically deploying the services and applications for us. Usually, this involves a multi-stage process, where code is first automatically deployed to a staging environment and can then be manually deployed to other environments, up until production. If deployment to production is also an automated process, it is called continuous deployment instead of continuous delivery.
+
 - Getting Docker Hub credentials
-- Getting Google Cloud credentials
+
+    - Go to https://hub.docker.com/.
+    - Click on your profile and go to your account settings.
+    - Click on the Personal access tokens tab and press the Generate new token button.
+    - Add a description, set expiration date.
+    - Choose Read, Write, Delete permissions and press the Generate button. .
+    - Copy the access token and store it in a safe place.
+    - Go to your GitHub repository and then go to Settings | Secrets and variables | Actions.
+    - Press the New repository secret button to add a new secret. As a name, write DOCKERHUB_USERNAME, and as a secret value, use your username on Docker Hub.
+    - Add another secret with the name DOCKERHUB_TOKEN and paste your previously created access token as the secret value.
+
+- Getting Azure Cloud credentials
+
+    - https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect
+    - Use Option 2: User-assigned managed identity
+    - Go to your GitHub repository and then go to Settings | Secrets and variables | Actions.
+    - Press the New repository secret button to add a new secret. AZURE_CLIENT_ID, and as a secret value.
+    - Press the New repository secret button to add a new secret. AZURE_TENANT_ID, and as a secret value.
+    - Press the New repository secret button to add a new secret. AZURE_SUBSCRIPTION_ID, and as a secret value.
+
 - Defining the deployment workflow
