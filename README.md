@@ -961,15 +961,107 @@ docker container prune
 # Deploying our full-stack application to the cloud
 
 - Creating a MongoDB Atlas database
-- Creating an account on Google Cloud
-- Deploying our Docker images to a Docker registry
-- Deploying the backend Docker image to Cloud Run
-- Deploying the frontend Docker image to Cloud Run
+- Creating an account on Azure Devops
 
-# Configuring CI to automate testing
+- Deploying the backend Docker image to a Docker registry
+
+```bash
+cd backend/
+docker build --platform linux/amd64 -t blog-backend .
+docker tag blog-backend [USERNAME]/blog-backend
+docker push [USERNAME]/blog-backend
+```
+
+- Deploying the backend Docker image to Azure Container Instances
+
+    - Need to set Environment Variables: PORT , DATABASE_URL
+
+- Deploying the frontend Docker image to a Docker registry
+
+```bash
+docker build --platform linux/amd64 --build-arg "VITE_BACKEND_URL=[URL]/api/v1" -t blog-frontend .
+docker tag blog-frontend [USERNAME]/blog-frontend
+docker push [USERNAME]/blog-frontend
+```
+
+- Deploying the frontend Docker image to Azure Container Instances
+    - Call IP address (Public) from Container Instance to check the result.
+
+# Configuring CI to automate testing (GitHub)
+
+Continuous Integration (CI) covers the automation of integrating code changes to find bugs quicker and keep the code base easily maintainable. Usually, this is facilitated by having scripts run automatically when a developer makes a pull/merge request before the code is merged into the main branch. This practice allows us to detect problems with our code early by, for example, running the linter and tests before the code can be merged. As a result, CI gives us more confidence in our code and allows us to make and deploy changes faster and more frequently.
+
+- Create a new .github/ folder in the root of our project. Inside it, create a workflows/ folder.
 
 - Adding CI for the frontend
+    - Inside the .github/workflows/ folder, create a new file called frontend-ci.yaml.
+
+```yaml
+name: Blog Frontend CI
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+jobs:
+    lint-and-build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.x, 18.x, 20.x]
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - name: Install dependencies
+              run: npm install
+            - name: Run linter on frontend
+              run: npm run lint
+            - name: Build frontend
+              run: npm run build
+```
+
 - Adding CI for the backend
+
+    - Inside the .github/workflows/ folder, create a new file called backend-ci.yaml.
+
+```yaml
+name: Blog Backend CI
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+jobs:
+    lint-and-test:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.x, 18.x, 20.x]
+        defaults:
+            run:
+                working-directory: ./backend
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
+            - name: Install dependencies
+              run: npm install
+            - name: Run linter on backend
+              run: npm run lint
+            - name: Run backend tests
+              run: npm test
+```
 
 # Configuring CD to automate the deployment
 
