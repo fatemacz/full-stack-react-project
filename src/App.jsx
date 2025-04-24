@@ -4,7 +4,7 @@ const queryClient = new QueryClient();
 export function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <h1>Full Stack React Project</h1>
+            <h1>Full Stack React Project - Tutorial</h1>
             <Blog />
         </QueryClientProvider>
     );
