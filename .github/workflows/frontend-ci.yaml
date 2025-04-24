@@ -1,4 +1,4 @@
-name: Blog Frontend CI
+name: Full Stack React Project Frontend CI
 on:
     push:
         branches:
@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [20.x]
+                node-version: [23.x]
         steps:
             - uses: actions/checkout@v3
             - name: Use Node.js ${{ matrix.node-version }}

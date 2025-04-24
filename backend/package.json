@@ -9,11 +9,6 @@
         "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
         "lint": "eslint ."
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
     "dependencies": {
         "body-parser": "^2.2.0",
         "cors": "^2.8.5",
