@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { jwtDecode } from 'jwt-decode';
 import { useAuth } from '../contexts/UseAuth.jsx';
 import { User } from './User.jsx';

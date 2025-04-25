@@ -8,7 +8,8 @@
 // }
 
 import ReactDOMServer from 'react-dom/server';
-import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router-dom';
+import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router';
+
 import { App } from './App.jsx';
 import { routes } from './routes.jsx';
 import { createFetchRequest } from './request.js';
