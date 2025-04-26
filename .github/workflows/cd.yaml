@@ -36,6 +36,7 @@ jobs:
                   region: ${{ secrets.GOOGLECLOUD_REGION }}
                   env_vars: |
                       DATABASE_URL=${{ secrets.DATABASE_URL }}
+                      JWT_SECRET=${{ secrets.JWT_SECRET }}
                   flags: '--allow-unauthenticated'
             - name: Build and push frontend image
               uses: docker/build-push-action@v4
@@ -52,6 +53,4 @@ jobs:
                   service: full-stack-react-project-frontend
                   image: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
                   region: ${{ secrets.GOOGLECLOUD_REGION }}
-                  env_vars: |
-                      FRONTEND_URL=${{ steps.deploy-frontend.outputs.url }}
                   flags: '--port=80 --allow-unauthenticated'

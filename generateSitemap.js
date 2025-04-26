@@ -4,9 +4,8 @@ dotenv.config();
 
 import process from 'process';
 
-const baseUrl = process.env.FRONTEND_URL;
-
 export async function generateSitemap() {
+    const baseUrl = window.location.href;
     const postsRequest = await fetch(`${process.env.VITE_BACKEND_URL}/posts`);
     const posts = await postsRequest.json();
     return `<?xml version="1.0" encoding="UTF-8"?>
