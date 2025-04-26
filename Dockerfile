@@ -9,3 +9,4 @@ RUN npm run build
 FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html
 COPY --from=build /build/dist .
+CMD ["npm", "start"]
