@@ -48,8 +48,7 @@ jobs:
                   push: true
                   tags: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
                   build-args: |
-                      VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}:${{ secrets.API_PORT }}/api/v1
-                      NODE_ENV=production
+                      VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}/api/v1
             - id: deploy-frontend
               name: Deploy frontend
               uses: google-github-actions/deploy-cloudrun@v1
