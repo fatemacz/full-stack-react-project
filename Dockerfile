@@ -1,11 +1,11 @@
 FROM node:23-slim AS build
 ARG VITE_BACKEND_URL=http://localhost:3001/api/v1
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
 RUN npm run build
 
 FROM nginx:alpine AS final

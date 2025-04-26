@@ -37,7 +37,9 @@ jobs:
                   env_vars: |
                       DATABASE_URL=${{ secrets.DATABASE_URL }}
                       JWT_SECRET=${{ secrets.JWT_SECRET }}
-                  flags: '--allow-unauthenticated'
+                  flags: |
+                      --port=${{ secrets.API_PORT }}
+                      --allow-unauthenticated
             - name: Build and push frontend image
               uses: docker/build-push-action@v4
               with:
@@ -46,7 +48,7 @@ jobs:
                   push: true
                   tags: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
                   build-args: |
-                      VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}/api/v1
+                      VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}:${{ secrets.API_PORT }}/api/v1
                       NODE_ENV=production
             - id: deploy-frontend
               name: Deploy frontend
@@ -55,4 +57,6 @@ jobs:
                   service: full-stack-react-project-frontend
                   image: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
                   region: ${{ secrets.GOOGLECLOUD_REGION }}
-                  flags: '--port=80 --allow-unauthenticated'
+                  flags: |
+                      --port=80
+                      --allow-unauthenticated
