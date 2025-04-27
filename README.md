@@ -938,6 +938,14 @@ docker stop dbserver my-blog-backend my-blog-frontend
 docker compose up
 ```
 
+- Rebuilding After Changes
+
+```bash
+docker compose down
+docker compose build
+docker compose up
+```
+
 Note: Press Ctrl + C to stop all Docker Compose containers.
 
 # Cleaning up unused containers
@@ -1010,7 +1018,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [16.x, 18.x, 20.x]
+                node-version: [20.x, 23.x]
         steps:
             - uses: actions/checkout@v3
             - name: Use Node.js ${{ matrix.node-version }}
@@ -1044,7 +1052,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [16.x, 18.x, 20.x]
+                node-version: [20.x, 23.x]
         defaults:
             run:
                 working-directory: ./backend
@@ -1089,3 +1097,69 @@ After the pull/merge request is merged, continuous delivery (CD) comes into play
     - Press the New repository secret button to add a new secret. AZURE_SUBSCRIPTION_ID, and as a secret value.
 
 - Defining the deployment workflow
+
+```yaml
+name: Deploy full-stack-react-project Application
+on:
+    push:
+        branches:
+            - main
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        environment:
+            name: production
+            url: ${{ steps.deploy-frontend.outputs.url }}
+        steps:
+            - uses: actions/checkout@v3
+            - name: Login to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - uses: google-github-actions/auth@v1
+              with:
+                  service_account: ${{ secrets.GOOGLECLOUD_SERVICE_ACCOUNT }}
+                  credentials_json: ${{ secrets.GOOGLECLOUD_CREDENTIALS }}
+            - name: Build and push backend image
+              uses: docker/build-push-action@v4
+              with:
+                  context: ./backend
+                  file: ./backend/Dockerfile
+                  push: true
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-backend:latest
+            - id: deploy-backend
+              name: Deploy backend
+              uses: google-github-actions/deploy-cloudrun@v1
+              with:
+                  service: full-stack-react-project-backend
+                  image: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-backend:latest
+                  region: ${{ secrets.GOOGLECLOUD_REGION }}
+                  env_vars: |
+                      DATABASE_URL=${{ secrets.DATABASE_URL }}
+                      JWT_SECRET=${{ secrets.JWT_SECRET }}
+                  flags: |
+                      --port=${{ secrets.API_PORT }}
+                      --allow-unauthenticated
+            - name: Build and push frontend image
+              uses: docker/build-push-action@v4
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: true
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
+                  build-args: |
+                      VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}/api/v1
+            - id: deploy-frontend
+              name: Deploy frontend
+              uses: google-github-actions/deploy-cloudrun@v1
+              with:
+                  service: full-stack-react-project-frontend
+                  image: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-react-project-frontend:latest
+                  region: ${{ secrets.GOOGLECLOUD_REGION }}
+                  flags: |
+                      --port=80
+                      --allow-unauthenticated
+
+```
+

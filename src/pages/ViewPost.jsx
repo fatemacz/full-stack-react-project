@@ -33,7 +33,7 @@ export function ViewPost({ postId }) {
         <div style={{ padding: 8 }}>
             {post && (
                 <article>
-                    <title>Full-Stack React Project</title>
+                    <title>Full Stack React Project</title>
                     <meta name="description" content={truncate(post.contents)} />
                     <meta property="og:type" content="article" />
                     <meta property="og:title" content={post.title} />

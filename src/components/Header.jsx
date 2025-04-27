@@ -9,11 +9,11 @@ export function Header() {
     if (token) {
         const { sub } = jwtDecode(token);
         return (
-            <div>
+            <nav>
                 Logged in as <User id={sub} />
                 <br />
                 <button onClick={() => setToken(null)}>Logout</button>
-            </div>
+            </nav>
         );
     }
 
